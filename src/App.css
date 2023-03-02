@@ -8,14 +8,13 @@
   transition: 0.5s ease-in-out;
   border: 0.5px solid #51555856;
   height: 70px;
-  width: 100%;
+
   padding: 10px;
 }
 
 .sidebar-container {
   max-height: 400px;
   transition: 0.5s ease-in-out;
-  height: 400px;
   padding-bottom: 10px;
 }
 .sidebar-container img {
@@ -52,4 +51,10 @@
 }
 .btns-navigator p {
   font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  #slider .imgs-sidebar-container {
+    margin-bottom: 0;
+  }
 }

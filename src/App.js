@@ -3,7 +3,7 @@ import Slider from "./Slider"
 
 const App = () => {
   return (
-    <Slider num="6" />)
+    <Slider num="5" />)
 }
 
 export default App

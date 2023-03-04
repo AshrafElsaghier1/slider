@@ -23,7 +23,6 @@ const Slider = ({ num }) => {
   let halfCount = Math.round(count / 2);
 
   const sliderShowHandler = (currentImgIndex, index) => {
-    console.log(elementSidebarRef.current.offsetHeight);
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
         return {
@@ -61,7 +60,7 @@ const Slider = ({ num }) => {
         return {
           ...prevState,
           transformSidebarImg: parseInt(
-            (currentImgIndex - Math.round(count / 2)) *
+            (currentImgIndex - halfCount) *
               (elementSidebarRef?.current?.offsetHeight + 10)
           ),
         };
@@ -72,7 +71,7 @@ const Slider = ({ num }) => {
       );
     }
 
-    if (currentImgIndex >= imgs.length - halfCount) {
+    if (currentImgIndex > imgs.length - halfCount) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
@@ -82,23 +81,22 @@ const Slider = ({ num }) => {
     }
   };
 
-  const activeClickHandler = (id) => {
-    setCurrentImg(id - 1);
-    sliderShowHandler(id, 1);
+  const activeClickHandler = (index) => {
+    setCurrentImg(index - 1);
+    sliderShowHandler(index, 1);
   };
 
-  const nextArrowHandler = (id) => {
-    if (id >= 0) {
+  const nextArrowHandler = (index) => {
+    if (index >= 0) {
       setCurrentImg((prev) => prev + 1);
     }
-    // 1 for async state
-    sliderShowHandler(id + 1, 0);
+    sliderShowHandler(index + 1, 0);
   };
-  const prevArrowHandler = (id) => {
-    if (id <= imgs.length - 1) {
+  const prevArrowHandler = (index) => {
+    if (index <= imgs.length - 1) {
       setCurrentImg(currentImg - 1);
     }
-    sliderShowHandler(id, 0);
+    sliderShowHandler(index, 0);
   };
 
   return (

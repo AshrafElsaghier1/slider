@@ -10,18 +10,31 @@ const Slider = ({ num }) => {
   const [transformTranslate, setTransformTranslate] = useState({
     transformMainImg: 0,
     gap: 0,
-    transformSidebarImg: 0,
+    transformSidebarImgY: 0,
+    transformSidebarImgX: 0,
   });
   const [currentImg, setCurrentImg] = useState(0);
-  const { transformMainImg, gap, transformSidebarImg } = transformTranslate;
+  const { transformMainImg, gap, transformSidebarImgY, transformSidebarImgX } =
+    transformTranslate;
   const [count, setCount] = useState(num);
   let [transformValueLastImgs, setTransformValueLastImgs] = useState(0);
 
+  let transformTranslateValue =
+    window.innerWidth >= 767 ? transformSidebarImgY : transformSidebarImgX;
   useEffect(() => {
     setCount(num);
-  }, [num]);
+  }, [num, transformSidebarImgX, transformSidebarImgY]);
   let halfCount = Math.round(count / 2);
-
+  useEffect(() => {
+    const resizeHandler = () => {
+      setTransformTranslate((prev) => {
+        return { ...prev };
+      });
+    };
+    window.addEventListener("resize", resizeHandler);
+    return () => window.removeEventListener("resize", resizeHandler);
+  }, [transformSidebarImgX]);
+  console.log({ transformSidebarImgX });
   const sliderShowHandler = (currentImgIndex, index) => {
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
@@ -47,7 +60,7 @@ const Slider = ({ num }) => {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformSidebarImg: 0,
+          transformSidebarImgY: 0,
         };
       });
     }
@@ -59,7 +72,7 @@ const Slider = ({ num }) => {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformSidebarImg: parseInt(
+          transformSidebarImgY: parseInt(
             (currentImgIndex - halfCount) *
               (elementSidebarRef?.current?.offsetHeight + 10)
           ),
@@ -70,17 +83,39 @@ const Slider = ({ num }) => {
         (imgs.length - count) * (elementSidebarRef?.current?.offsetHeight + 10)
       );
     }
-
     if (currentImgIndex > imgs.length - halfCount) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformSidebarImg: transformValueLastImgs,
+          transformSidebarImgY: transformValueLastImgs,
         };
       });
     }
+    if (window.innerWidth < 767) {
+      if (currentImgIndex <= Math.round(halfCount / 2)) {
+        setTransformTranslate((prevState) => {
+          return {
+            ...prevState,
+            transformSidebarImgX: 0,
+          };
+        });
+      }
+      if (
+        currentImgIndex > Math.round(halfCount / 2) &&
+        currentImgIndex < imgs.length
+      ) {
+        setTransformTranslate((prevState) => {
+          return {
+            ...prevState,
+            transformSidebarImgX: parseInt(
+              (currentImgIndex - (num > 6 ? 3 : 2)) *
+                (elementSidebarRef?.current?.offsetWidth + 10)
+            ),
+          };
+        });
+      }
+    }
   };
-
   const activeClickHandler = (index) => {
     setCurrentImg(index - 1);
     sliderShowHandler(index, 1);
@@ -98,7 +133,6 @@ const Slider = ({ num }) => {
     }
     sliderShowHandler(index, 0);
   };
-
   return (
     <div className="my-5" id="slider">
       <Container>
@@ -108,7 +142,11 @@ const Slider = ({ num }) => {
               <div
                 className="sidebar-container py-0 d-flex flex-row flex-md-column"
                 style={{
-                  transform: `translateY(-${transformSidebarImg}px)`,
+                  transform: `  ${
+                    window.innerWidth >= 767
+                      ? `translateY(-${transformTranslateValue}px)`
+                      : `translateX(-${transformTranslateValue}px)`
+                  } `,
                   height: `calc( (80px * ${count})  )`,
                   maxHeight: `calc( (80px * ${count})  )`,
                   gap: "10px",
@@ -122,7 +160,16 @@ const Slider = ({ num }) => {
                     } `}
                     ref={elementSidebarRef}
                     onClick={() => activeClickHandler(id)}
-                    style={{ height: ` calc((100% / ${count}) - 10px)` }}
+                    style={{
+                      height: ` calc((100% / ${count}) - 10px)`,
+                      minWidth: `${
+                        window.innerWidth <= 767
+                          ? `  calc((100% / ${
+                              halfCount <= 4 ? halfCount : 4
+                            }) - 10px)`
+                          : ``
+                      }`,
+                    }}
                   >
                     <img
                       src={imgSrc}

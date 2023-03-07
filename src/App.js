@@ -1,9 +1,15 @@
+
 import Slider from "./Slider"
 
 
 const App = () => {
+
   return (
-    <Slider num="10" />)
+    <>
+
+      <Slider num="5" />
+    </>
+  )
 }
 
 export default App

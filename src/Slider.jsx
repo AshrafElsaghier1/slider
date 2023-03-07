@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { ImArrowRight, ImArrowLeft } from "react-icons/im";
+import Form from "react-bootstrap/Form";
 import "./App.css";
 import imgs from "./dummyData";
 
@@ -9,41 +10,43 @@ const Slider = ({ num }) => {
   const elementActiveImg = useRef(null);
   const [transformTranslate, setTransformTranslate] = useState({
     transformMainImg: 0,
-    gap: 0,
     transformSidebarImgY: 0,
     transformSidebarImgX: 0,
+    gapX: 0,
   });
   const [currentImg, setCurrentImg] = useState(0);
-  const { transformMainImg, gap, transformSidebarImgY, transformSidebarImgX } =
-    transformTranslate;
-  const [count, setCount] = useState(num);
-  let [transformValueLastImgs, setTransformValueLastImgs] = useState(0);
+  const [data] = useState(imgs);
 
+  const [count, setCount] = useState(num);
+  let [transformValueLastImgsY, setTransformValueLastImgsY] = useState(0);
+  let [transformValueLastImgsX, setTransformValueLastImgsX] = useState(0);
+
+  let halfShownCount = Math.round(count / 2);
+  const { transformMainImg, transformSidebarImgY, transformSidebarImgX, gapX } =
+    transformTranslate;
+  const [layout, setLayout] = useState("horizontal");
+  const labelHandler = (e) => {
+    if (e.target.checked) {
+      setLayout(e.target.id);
+    }
+  };
   let transformTranslateValue =
-    window.innerWidth >= 767 ? transformSidebarImgY : transformSidebarImgX;
+    layout === "vertical" ? transformSidebarImgY : transformSidebarImgX;
   useEffect(() => {
     setCount(num);
-  }, [num, transformSidebarImgX, transformSidebarImgY]);
-  let halfCount = Math.round(count / 2);
-  useEffect(() => {
-    const resizeHandler = () => {
-      setTransformTranslate((prev) => {
-        return { ...prev };
-      });
-    };
+
+    const resizeHandler = () => {};
     window.addEventListener("resize", resizeHandler);
     return () => window.removeEventListener("resize", resizeHandler);
-  }, [transformSidebarImgX]);
-  console.log({ transformSidebarImgX });
+  }, [num]);
+
   const sliderShowHandler = (currentImgIndex, index) => {
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformMainImg:
-            parseInt(currentImgIndex - 1) *
-            parseInt(elementActiveImg?.current?.offsetWidth),
-          gap: 0,
+          transformMainImg: parseInt(currentImgIndex - 1) * 100,
+          gapX: parseInt(currentImgIndex - 1) * 10,
         };
       });
     } else {
@@ -51,12 +54,12 @@ const Slider = ({ num }) => {
         return {
           ...prevState,
           transformMainImg: 0,
-          gap: 0,
+          gapX: 0,
         };
       });
     }
 
-    if (currentImgIndex < halfCount) {
+    if (currentImgIndex < halfShownCount) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
@@ -66,33 +69,41 @@ const Slider = ({ num }) => {
     }
 
     if (
-      currentImgIndex >= halfCount &&
-      currentImgIndex <= imgs.length - halfCount
+      currentImgIndex >= halfShownCount &&
+      currentImgIndex <= data.length - halfShownCount
     ) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
           transformSidebarImgY: parseInt(
-            (currentImgIndex - halfCount) *
+            (currentImgIndex - halfShownCount) *
               (elementSidebarRef?.current?.offsetHeight + 10)
           ),
         };
       });
 
-      setTransformValueLastImgs(
-        (imgs.length - count) * (elementSidebarRef?.current?.offsetHeight + 10)
+      setTransformValueLastImgsY(
+        (data.length - count) * (elementSidebarRef?.current?.offsetHeight + 10)
       );
     }
-    if (currentImgIndex > imgs.length - halfCount) {
+    if (currentImgIndex > data.length - halfShownCount) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformSidebarImgY: transformValueLastImgs,
+          transformSidebarImgY: transformValueLastImgsY,
         };
       });
     }
-    if (window.innerWidth < 767) {
-      if (currentImgIndex <= Math.round(halfCount / 2)) {
+
+    // small media
+
+    if (layout === "horizontal") {
+      setTransformValueLastImgsX(
+        (data.length - count) * (elementSidebarRef?.current?.offsetWidth + 10)
+      );
+
+      if (currentImgIndex <= Math.round(halfShownCount)) {
+        console.log("test");
         setTransformTranslate((prevState) => {
           return {
             ...prevState,
@@ -101,21 +112,30 @@ const Slider = ({ num }) => {
         });
       }
       if (
-        currentImgIndex > Math.round(halfCount / 2) &&
-        currentImgIndex < imgs.length
+        currentImgIndex > Math.round(halfShownCount) &&
+        currentImgIndex < data.length
       ) {
         setTransformTranslate((prevState) => {
           return {
             ...prevState,
             transformSidebarImgX: parseInt(
-              (currentImgIndex - (num > 6 ? 3 : 2)) *
+              (currentImgIndex - halfShownCount) *
                 (elementSidebarRef?.current?.offsetWidth + 10)
             ),
           };
         });
       }
+      if (currentImgIndex > data.length - halfShownCount) {
+        setTransformTranslate((prevState) => {
+          return {
+            ...prevState,
+            transformSidebarImgX: transformValueLastImgsX,
+          };
+        });
+      }
     }
   };
+
   const activeClickHandler = (index) => {
     setCurrentImg(index - 1);
     sliderShowHandler(index, 1);
@@ -128,46 +148,99 @@ const Slider = ({ num }) => {
     sliderShowHandler(index + 1, 0);
   };
   const prevArrowHandler = (index) => {
-    if (index <= imgs.length - 1) {
+    if (index <= data.length - 1) {
       setCurrentImg(currentImg - 1);
     }
     sliderShowHandler(index, 0);
   };
+
+  console.log({ transformValueLastImgsX });
+  console.log({ transformValueLastImgsY });
+
   return (
     <div className="my-5" id="slider">
       <Container>
-        <Row className="align-items-center ">
-          <Col md={3} lg={2} className=" py-0 order-2 order-md-1  ">
-            <div className="overflow-hidden  ">
+        <Form>
+          {["radio"].map((type) => (
+            <div key={`inline-${type}`} className="mb-3">
+              <Form.Check
+                inline
+                label="horizontal"
+                name="group1"
+                type={type}
+                id="horizontal"
+                onChange={labelHandler}
+                checked={layout === "horizontal" ? true : false}
+              />
+              <Form.Check
+                inline
+                label="vertical"
+                name="group1"
+                type={type}
+                id="vertical"
+                onChange={labelHandler}
+                checked={layout === "vertical" ? true : false}
+              />
+            </div>
+          ))}
+        </Form>
+        <Row className={`align-items-center `}>
+          <Col
+            xl={`${layout === "vertical" ? 2 : 12} `}
+            className={` py-0  ${
+              layout === "vertical" ? "order-1 " : "order-2 mt-5 "
+            }`}
+          >
+            <div
+              className="overflow-hidden"
+              style={{
+                maxWidth: "1000px",
+                margin: "auto",
+              }}
+            >
               <div
-                className="sidebar-container py-0 d-flex flex-row flex-md-column"
+                className={`sidebar-container py-0 d-flex ${
+                  layout === "vertical" ? "flex-column" : "flex-row first"
+                } `}
                 style={{
                   transform: `  ${
-                    window.innerWidth >= 767
+                    layout === "vertical"
                       ? `translateY(-${transformTranslateValue}px)`
                       : `translateX(-${transformTranslateValue}px)`
                   } `,
-                  height: `calc( (80px * ${count})  )`,
-                  maxHeight: `calc( (80px * ${count})  )`,
+                  height: `  ${
+                    layout === "horizontal"
+                      ? "auto"
+                      : `calc( (80px * ${count})  )`
+                  } `,
+                  maxHeight: `  ${
+                    layout === "horizontal"
+                      ? "auto"
+                      : `calc( (80px * ${count})  )`
+                  } `,
+
                   gap: "10px",
                 }}
               >
-                {imgs.map(({ imgSrc, id }) => (
+                {data.map(({ imgSrc, id }) => (
                   <div
+                    ref={elementSidebarRef}
                     key={id}
                     className={`imgs-sidebar-container ${
                       currentImg + 1 === id ? "active" : ""
-                    } `}
-                    ref={elementSidebarRef}
+                    } 
+                    ${layout === "vertical" ? "" : "first"} 
+                    
+                    
+                    `}
                     onClick={() => activeClickHandler(id)}
                     style={{
                       height: ` calc((100% / ${count}) - 10px)`,
+                      maxHeight: ` calc((100% / ${count}) - 10px)`,
                       minWidth: `${
-                        window.innerWidth <= 767
-                          ? `  calc((100% / ${
-                              halfCount <= 4 ? halfCount : 4
-                            }) - 10px)`
-                          : ``
+                        layout === "horizontal"
+                          ? `calc(100% / ${count} - 10px)`
+                          : ` `
                       }`,
                     }}
                   >
@@ -189,26 +262,31 @@ const Slider = ({ num }) => {
               >
                 <ImArrowLeft />
               </button>
-              <p className="mb-0"> {imgs[currentImg]?.title} </p>
+              <p className="mb-0"> {data[currentImg]?.title} </p>
               <button
                 className="btn btn-sm"
-                disabled={currentImg === imgs.length - 1 ? true : false}
+                disabled={currentImg === data.length - 1 ? true : false}
                 onClick={() => nextArrowHandler(currentImg + 1)}
               >
                 <ImArrowRight />
               </button>
             </div>
           </Col>
-          <Col md={9} lg={10} className="mx-auto  order-1 order-md-2 mb-5">
+          <Col
+            lg={`${layout === "vertical" ? 10 : 12} `}
+            className={` mx-auto mb-5 mb-md-0   ${
+              layout === "vertical" ? "order-2" : "order-1"
+            }     `}
+            style={{ maxWidth: "1000px" }}
+          >
             <div className="overflow-hidden ">
               <div
                 className={`imgs-container d-flex h-100`}
                 style={{
-                  transform: `translateX(-${transformMainImg}px)`,
-                  gap: `${gap}`,
+                  transform: `translateX( calc(-${transformMainImg}% - ${gapX}px))`,
                 }}
               >
-                {imgs.map(({ imgSrc, id }) => (
+                {data.map(({ imgSrc, id }) => (
                   <img
                     src={imgSrc}
                     draggable={false}

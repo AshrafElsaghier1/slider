@@ -33,7 +33,9 @@ const imgs = [
         id: 7,
         imgSrc: "/assets/imgs/banner-8.webp", title: "Kilinikat"
 
-    }, {
+    }
+
+    , {
         id: 8,
         imgSrc: "/assets/imgs/banner-9.webp", title: "Basket"
 

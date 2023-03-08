@@ -62,9 +62,10 @@
     height: auto !important;
     margin-bottom: 15px;
   }
-  #slider .imgs-sidebar-container:first-of-type {
+  /* #slider .imgs-sidebar-container.first:first-of-type {
     margin-left: 10px;
-  }
+    background-color: red;
+  } */
   .btns-navigator button:first-of-type {
     left: 0px;
   }

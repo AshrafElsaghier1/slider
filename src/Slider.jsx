@@ -39,7 +39,7 @@ const Slider = ({ num }) => {
     // window.addEventListener("resize", resizeHandler);
     // return () => window.removeEventListener("resize", resizeHandler);
   }, [num]);
-  console.log({ currentImg });
+
   const sliderShowHandler = (currentImgIndex, index) => {
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
@@ -64,6 +64,7 @@ const Slider = ({ num }) => {
         return {
           ...prevState,
           transformSidebarImgY: 0,
+          transformSidebarImgX: 0,
         };
       });
     }
@@ -75,14 +76,16 @@ const Slider = ({ num }) => {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformSidebarImgY:
+          transformSidebarImgY: (currentImgIndex - halfShownCount) * 80,
+          transformSidebarImgX:
             (currentImgIndex - halfShownCount) *
-            (elementSidebarRef?.current?.offsetHeight + 10),
+            (elementSidebarRef?.current?.offsetWidth + 10),
         };
       });
 
-      setTransformValueLastImgsY(
-        (data.length - count) * (elementSidebarRef?.current?.offsetHeight + 10)
+      setTransformValueLastImgsY((data.length - count) * 80);
+      setTransformValueLastImgsX(
+        (data.length - count) * (elementSidebarRef?.current?.offsetWidth + 10)
       );
     }
     if (currentImgIndex > data.length - halfShownCount) {
@@ -90,48 +93,48 @@ const Slider = ({ num }) => {
         return {
           ...prevState,
           transformSidebarImgY: transformValueLastImgsY,
+          transformSidebarImgX: transformValueLastImgsX,
         };
       });
     }
-
+    console.log({ transformSidebarImgX });
     // small media
 
-    if (layout === "horizontal") {
-      setTransformValueLastImgsX(
-        (data.length - count) * (elementSidebarRef?.current?.offsetWidth + 10)
-      );
+    // if (layout === "horizontal") {
+    //   setTransformValueLastImgsX(
+    //     (data.length - count) * (elementSidebarRef?.current?.offsetWidth + 10)
+    //   );
 
-      if (currentImgIndex <= Math.round(halfShownCount)) {
-        console.log("test");
-        setTransformTranslate((prevState) => {
-          return {
-            ...prevState,
-            transformSidebarImgX: 0,
-          };
-        });
-      }
-      if (
-        currentImgIndex > Math.round(halfShownCount) &&
-        currentImgIndex < data.length
-      ) {
-        setTransformTranslate((prevState) => {
-          return {
-            ...prevState,
-            transformSidebarImgX:
-              (currentImgIndex - halfShownCount) *
-              (elementSidebarRef?.current?.offsetWidth + 10),
-          };
-        });
-      }
-      if (currentImgIndex > data.length - halfShownCount) {
-        setTransformTranslate((prevState) => {
-          return {
-            ...prevState,
-            transformSidebarImgX: transformValueLastImgsX,
-          };
-        });
-      }
-    }
+    //   if (currentImgIndex <= Math.round(halfShownCount)) {
+    //     setTransformTranslate((prevState) => {
+    //       return {
+    //         ...prevState,
+    //         transformSidebarImgX: 0,
+    //       };
+    //     });
+    //   }
+    //   if (
+    //     currentImgIndex > Math.round(halfShownCount) &&
+    //     currentImgIndex < data.length
+    //   ) {
+    //     setTransformTranslate((prevState) => {
+    //       return {
+    //         ...prevState,
+    //         transformSidebarImgX:
+    //           (currentImgIndex - halfShownCount) *
+    //           (elementSidebarRef?.current?.offsetWidth + 10),
+    //       };
+    //     });
+    //   }
+    //   if (currentImgIndex > data.length - halfShownCount) {
+    //     setTransformTranslate((prevState) => {
+    //       return {
+    //         ...prevState,
+    //         transformSidebarImgX: transformValueLastImgsX,
+    //       };
+    //     });
+    //   }
+    // }
   };
 
   const activeClickHandler = (index) => {
@@ -151,9 +154,6 @@ const Slider = ({ num }) => {
     }
     sliderShowHandler(index, 0);
   };
-
-  console.log({ transformValueLastImgsX });
-  console.log({ transformValueLastImgsY });
 
   return (
     <div className="my-5" id="slider">
@@ -192,8 +192,8 @@ const Slider = ({ num }) => {
             <div
               className="overflow-hidden"
               style={{
-                maxWidth: "1000px",
-                margin: "auto",
+                maxWidth: `calc( 176px * ${count})`,
+                margin: " 20px auto",
               }}
             >
               <div
@@ -281,7 +281,7 @@ const Slider = ({ num }) => {
             }     `}
             style={{ maxWidth: "1000px" }}
           >
-            <div className="overflow-hidden ">
+            <div className="overflow-hidden">
               <div
                 className={`imgs-container d-flex h-100`}
                 style={{

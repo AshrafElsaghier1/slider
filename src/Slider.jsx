@@ -35,18 +35,18 @@ const Slider = ({ num }) => {
   useEffect(() => {
     setCount(num);
 
-    const resizeHandler = () => {};
-    window.addEventListener("resize", resizeHandler);
-    return () => window.removeEventListener("resize", resizeHandler);
+    // const resizeHandler = () => {};
+    // window.addEventListener("resize", resizeHandler);
+    // return () => window.removeEventListener("resize", resizeHandler);
   }, [num]);
-
+  console.log({ currentImg });
   const sliderShowHandler = (currentImgIndex, index) => {
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformMainImg: parseInt(currentImgIndex - 1) * 100,
-          gapX: parseInt(currentImgIndex - 1) * 10,
+          transformMainImg: (currentImgIndex - 1) * 100,
+          gapX: (currentImgIndex - 1) * 10,
         };
       });
     } else {
@@ -75,10 +75,9 @@ const Slider = ({ num }) => {
       setTransformTranslate((prevState) => {
         return {
           ...prevState,
-          transformSidebarImgY: parseInt(
+          transformSidebarImgY:
             (currentImgIndex - halfShownCount) *
-              (elementSidebarRef?.current?.offsetHeight + 10)
-          ),
+            (elementSidebarRef?.current?.offsetHeight + 10),
         };
       });
 
@@ -118,10 +117,9 @@ const Slider = ({ num }) => {
         setTransformTranslate((prevState) => {
           return {
             ...prevState,
-            transformSidebarImgX: parseInt(
+            transformSidebarImgX:
               (currentImgIndex - halfShownCount) *
-                (elementSidebarRef?.current?.offsetWidth + 10)
-            ),
+              (elementSidebarRef?.current?.offsetWidth + 10),
           };
         });
       }
@@ -235,7 +233,11 @@ const Slider = ({ num }) => {
                     `}
                     onClick={() => activeClickHandler(id)}
                     style={{
-                      height: ` calc((100% / ${count}) - 10px)`,
+                      height: `${
+                        layout === "vertical"
+                          ? `calc((100% / ${count}) - 10px)`
+                          : "100px"
+                      }`,
                       maxHeight: ` calc((100% / ${count}) - 10px)`,
                       minWidth: `${
                         layout === "horizontal"

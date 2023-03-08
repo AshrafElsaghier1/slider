@@ -12,7 +12,6 @@
   transition: 0.5s ease-in-out;
   border: 0.5px solid #51555856;
   padding: 10px;
-  height: 70px !important;
 }
 
 .sidebar-container {
@@ -78,9 +77,16 @@
   .imgs-container {
     width: 100%;
   }
+  .flow-container {
+    max-width: 506px;
+  }
 }
 @media (min-width: 768px) and (max-width: 991px) {
   .imgs-container {
     width: 506px;
+  }
+  .flow-container {
+    max-width: 1000px;
+    margin: auto;
   }
 }

@@ -34,12 +34,12 @@ const Slider = ({ num }) => {
     layout === "vertical" ? transformSidebarImgY : transformSidebarImgX;
   useEffect(() => {
     setCount(num);
-
+    setEle(elementSidebarRef?.current?.offsetWidth);
     // const resizeHandler = () => {};
     // window.addEventListener("resize", resizeHandler);
     // return () => window.removeEventListener("resize", resizeHandler);
-  }, [num]);
-
+  }, [num, elementSidebarRef?.current?.offsetWidth]);
+  let [ele, setEle] = useState(0);
   const sliderShowHandler = (currentImgIndex, index) => {
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
@@ -97,46 +97,8 @@ const Slider = ({ num }) => {
         };
       });
     }
-    console.log({ transformSidebarImgX });
-    // small media
-
-    // if (layout === "horizontal") {
-    //   setTransformValueLastImgsX(
-    //     (data.length - count) * (elementSidebarRef?.current?.offsetWidth + 10)
-    //   );
-
-    //   if (currentImgIndex <= Math.round(halfShownCount)) {
-    //     setTransformTranslate((prevState) => {
-    //       return {
-    //         ...prevState,
-    //         transformSidebarImgX: 0,
-    //       };
-    //     });
-    //   }
-    //   if (
-    //     currentImgIndex > Math.round(halfShownCount) &&
-    //     currentImgIndex < data.length
-    //   ) {
-    //     setTransformTranslate((prevState) => {
-    //       return {
-    //         ...prevState,
-    //         transformSidebarImgX:
-    //           (currentImgIndex - halfShownCount) *
-    //           (elementSidebarRef?.current?.offsetWidth + 10),
-    //       };
-    //     });
-    //   }
-    //   if (currentImgIndex > data.length - halfShownCount) {
-    //     setTransformTranslate((prevState) => {
-    //       return {
-    //         ...prevState,
-    //         transformSidebarImgX: transformValueLastImgsX,
-    //       };
-    //     });
-    //   }
-    // }
   };
-
+  console.log({ ele });
   const activeClickHandler = (index) => {
     setCurrentImg(index - 1);
     sliderShowHandler(index, 1);
@@ -198,7 +160,7 @@ const Slider = ({ num }) => {
             >
               <div
                 className={`sidebar-container py-0 d-flex ${
-                  layout === "vertical" ? "flex-column" : "flex-row first"
+                  layout === "vertical" ? "flex-column" : "flex-row "
                 } `}
                 style={{
                   transform: `  ${
@@ -227,7 +189,7 @@ const Slider = ({ num }) => {
                     className={`imgs-sidebar-container ${
                       currentImg + 1 === id ? "active" : ""
                     } 
-                    ${layout === "vertical" ? "" : "first"} 
+                    ${layout === "vertical" ? "" : "firstEle-gap"} 
                     
                     
                     `}

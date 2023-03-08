@@ -12,8 +12,14 @@
   transition: 0.5s ease-in-out;
   border: 0.5px solid #51555856;
   padding: 10px;
+  max-width: 166px;
 }
-
+#slider .imgs-sidebar-container.firstEle-gap:first-of-type {
+  margin-left: 5px;
+}
+#slider .imgs-sidebar-container img {
+  max-width: 176px !important;
+}
 .sidebar-container {
   transition: 0.5s ease-in-out;
 }

@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { ImArrowRight, ImArrowLeft } from "react-icons/im";
-import Form from "react-bootstrap/Form";
+import data from "./dummyData";
 import "./App.css";
-import imgs from "./dummyData";
 
-const Slider = ({ num }) => {
+const Slider = ({ num, thumb }) => {
   const elementSidebarRef = useRef(null);
   const elementActiveImg = useRef(null);
   const [transformTranslate, setTransformTranslate] = useState({
@@ -14,8 +13,10 @@ const Slider = ({ num }) => {
     transformSidebarImgX: 0,
     gapX: 0,
   });
+
+  console.log({ thumb });
+
   const [currentImg, setCurrentImg] = useState(0);
-  const [data] = useState(imgs);
 
   const [count, setCount] = useState(num);
   let [transformValueLastImgsY, setTransformValueLastImgsY] = useState(0);
@@ -24,22 +25,23 @@ const Slider = ({ num }) => {
   let halfShownCount = Math.round(count / 2);
   const { transformMainImg, transformSidebarImgY, transformSidebarImgX, gapX } =
     transformTranslate;
-  const [layout, setLayout] = useState("horizontal");
-  const labelHandler = (e) => {
-    if (e.target.checked) {
-      setLayout(e.target.id);
-    }
-  };
+  const [layout, setLayout] = useState("vertical");
+
   let transformTranslateValue =
     layout === "vertical" ? transformSidebarImgY : transformSidebarImgX;
   useEffect(() => {
     setCount(num);
-    setEle(elementSidebarRef?.current?.offsetWidth);
-    // const resizeHandler = () => {};
-    // window.addEventListener("resize", resizeHandler);
-    // return () => window.removeEventListener("resize", resizeHandler);
-  }, [num, elementSidebarRef?.current?.offsetWidth]);
-  let [ele, setEle] = useState(0);
+    const resizeHandler = () => {
+      if (window.innerWidth > 767) {
+        setLayout("vertical");
+      } else {
+        setLayout("horizontal");
+      }
+    };
+    window.addEventListener("resize", resizeHandler);
+    return () => window.removeEventListener("resize", resizeHandler);
+  }, [num]);
+
   const sliderShowHandler = (currentImgIndex, index) => {
     if (currentImgIndex > index) {
       setTransformTranslate((prevState) => {
@@ -98,7 +100,7 @@ const Slider = ({ num }) => {
       });
     }
   };
-  console.log({ ele });
+
   const activeClickHandler = (index) => {
     setCurrentImg(index - 1);
     sliderShowHandler(index, 1);
@@ -120,35 +122,12 @@ const Slider = ({ num }) => {
   return (
     <div className="my-5" id="slider">
       <Container>
-        <Form>
-          {["radio"].map((type) => (
-            <div key={`inline-${type}`} className="mb-3">
-              <Form.Check
-                inline
-                label="horizontal"
-                name="group1"
-                type={type}
-                id="horizontal"
-                onChange={labelHandler}
-                checked={layout === "horizontal" ? true : false}
-              />
-              <Form.Check
-                inline
-                label="vertical"
-                name="group1"
-                type={type}
-                id="vertical"
-                onChange={labelHandler}
-                checked={layout === "vertical" ? true : false}
-              />
-            </div>
-          ))}
-        </Form>
-        <Row className={`align-items-center `}>
+        <Row className={`align-items-center`}>
           <Col
-            xl={`${layout === "vertical" ? 2 : 12} `}
+            lg={`${layout === "vertical" ? 2 : 12} `}
+            md={`${layout === "vertical" ? 3 : 12} `}
             className={` py-0  ${
-              layout === "vertical" ? "order-1 " : "order-2 mt-5 "
+              layout === "vertical" ? "order-1 " : "order-2  "
             }`}
           >
             <div
@@ -220,7 +199,7 @@ const Slider = ({ num }) => {
             </div>
             <div className="btns-navigator d-flex align-items-center justify-content-center  ">
               <button
-                className="btn btn-sm"
+                className="btn btn-sm "
                 disabled={currentImg === 0 ? true : false}
                 onClick={() => prevArrowHandler(currentImg)}
               >
@@ -238,6 +217,7 @@ const Slider = ({ num }) => {
           </Col>
           <Col
             lg={`${layout === "vertical" ? 10 : 12} `}
+            md={`${layout === "vertical" ? 9 : 12} `}
             className={` mx-auto mb-5 mb-md-0   ${
               layout === "vertical" ? "order-2" : "order-1"
             }     `}
